@@ -6,52 +6,95 @@
 </head>
 <body>
 <nav class="navbar">
-    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-    <a href="{{ url_for('customer_management') }}">Customer Management</a>
-    <a href="{{ url_for('onboarded_customers') }}">Onboarded Customers</a>
+    <div class="navbar-links"> {# Added wrapper div #}
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+         {% if 'customer_management' in session.get('page_access', []) or session.get('role') == 'admin' %}
+             <a href="{{ url_for('customer_management') }}">Customer Management</a>
+        {% endif %}
+        {% if 'onboarded_customers' in session.get('page_access', []) or session.get('role') == 'admin' %}
+            <a href="{{ url_for('onboarded_customers') }}">Onboarded Customers</a>
+        {% endif %}
+        {% if session.get('role') == 'admin' %}
+            <a href="/user_management">User Management</a>
+        {% endif %}
+    </div>
+     <div class="welcome-info"> {# Added wrapper div #}
+        <span>Welcome, {{ session.get('username', 'Guest') }}!</span>
+        <a href="/logout">Logout</a>
+    </div>
 </nav>
 
-    {# Wrap the heading and form in the new container div #}
-    <div class="form-container">
+    <div class="form-container"> {# Using form-container class #}
         <h1>Edit Customer</h1>
-        <form action="{{ url_for('update_customer', id=customer[0]) }}" method="post">
-            <input type="hidden" name="id" value="{{ customer[0] }}">
 
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" value="{{ customer[2] }}" required>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages"> {# Use flash-messages class #}
+                {% for message in messages %}
+                    <li class="error">{{ message }}</li> {# Use error class for messages #}
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
 
-            <label for="company">Company:</label>
-            <input type="text" id="company" name="company" value="{{ customer[3] }}" required>
+        <form action="{{ url_for('edit_customer', id=customer[0]) }}" method="post"> {# Use rowid in the action URL #}
+            <input type="hidden" name="id" value="{{ customer[0] }}"> {# rowid #}
 
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address" value="{{ customer[4] }}" required>
+            <div> {# Wrap in div for spacing #}
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ customer[3] }}" required> {# Corrected Index #}
+            </div>
 
-            <label for="city">City:</label>
-            <input type="text" id="city" name="city" value="{{ customer[5] }}" required>
+            <div> {# Wrap in div for spacing #}
+                <label for="company">Company:</label>
+                <input type="text" id="company" name="company" value="{{ customer[4] }}" required> {# Corrected Index #}
+            </div>
 
-            <label for="state">State:</label>
-            <input type="text" id="state" name="state" value="{{ customer[6] }}" required>
+            <div> {# Wrap in div for spacing #}
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" value="{{ customer[5] }}" required> {# Corrected Index #}
+            </div>
 
-            <label for="country">Country:</label>
-            <input type="text" id="country" name="country" value="{{ customer[7] }}" required>
+            <div> {# Wrap in div for spacing #}
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" value="{{ customer[6] }}" required> {# Corrected Index #}
+            </div>
 
-            <label for="industry">Industry Type:</label>
-            <input type="text" id="industry" name="industry" value="{{ customer[8] }}" required>
+            <div> {# Wrap in div for spacing #}
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" value="{{ customer[7] }}" required> {# Corrected Index #}
+            </div>
 
-            <label for="core_business">Core Business:</label>
-            <input type="text" id="core_business" name="core_business" value="{{ customer[9] }}" required>
+            <div> {# Wrap in div for spacing #}
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" value="{{ customer[8] }}" required> {# Corrected Index #}
+            </div>
 
-            <label for="contact">Contact:</label>
-            <input type="text" id="contact" name="contact" value="{{ customer[10] }}" required>
+            <div> {# Wrap in div for spacing #}
+                <label for="industry">Industry Type:</label>
+                <input type="text" id="industry" name="industry" value="{{ customer[9] }}" required> {# Corrected Index #}
+            </div>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{ customer[11] }}" >
+            <div> {# Wrap in div for spacing #}
+                <label for="core_business">Core Business:</label>
+                <input type="text" id="core_business" name="core_business" value="{{ customer[10] }}" required> {# Corrected Index #}
+            </div>
 
-            <button type="submit">Update Customer</button>
+            <div> {# Wrap in div for spacing #}
+                <label for="contact">Contact:</label>
+                <input type="text" id="contact" name="contact" value="{{ customer[11] }}" required> {# Corrected Index #}
+            </div>
+
+            <div> {# Wrap in div for spacing #}
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ customer[12] }}" > {# Corrected Index #}
+            </div>
+
+            <div class="button-group"> {# Using button-group class #}
+                <button type="submit">Update Customer</button>
+                <a href="{{ url_for('customer_management') }}" class="cancel-link">Back to Customer List</a> {# Using cancel-link class #}
+            </div>
         </form>
-
-        {# Add the back-link class to the back link #}
-        <a href="{{ url_for('customer_management') }}" class="back-link">Back to Customer List</a>
     </div>
 
 </body>

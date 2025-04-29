@@ -3,164 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <title>Onboarded Customers</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="bg-gray-100 font-sans">
+<body>
 
-<!-- Navbar -->
-<nav class="navbar bg-white p-4 shadow mb-6">
-    <a href="/">Dashboard</a> |
-    <a href="/customer_management">Customer Management</a> |
-    <a href="/onboarded_customers" class="font-bold">Onboarded Customers</a>
+<nav class="navbar">
+    <div class="navbar-links"> {# Added wrapper div #}
+        <a href="/dashboard">Dashboard</a>
+        {% if 'customer_management' in session.get('page_access', []) or session.get('role') == 'admin' %}
+             <a href="/customer_management">Customer Management</a>
+        {% endif %}
+        {% if 'onboarded_customers' in session.get('page_access', []) or session.get('role') == 'admin' %}
+            <a href="/onboarded_customers" class="font-bold">Onboarded Customers</a> {# Kept font-bold for emphasis #}
+        {% endif %}
+        {% if session.get('role') == 'admin' %}
+            <a href="/user_management">User Management</a>
+        {% endif %}
+    </div>
+     <div class="welcome-info"> {# Added wrapper div #}
+        <span>Welcome, {{ session.get('username', 'Guest') }}!</span>
+        <a href="/logout">Logout</a>
+    </div>
 </nav>
 
-<!-- Main Container -->
-<div class="container mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-4">Onboarded Customers</h1>
+<div class="container"> {# Using container class #}
+    <div class="list-container"> {# Using list-container class #}
+        <h1 class="page-title">Onboarded Customers</h1> {# Changed to h1 and added class #}
 
-    <table class="min-w-full bg-white rounded shadow-md overflow-hidden">
-        <thead class="bg-gray-200">
-            <tr>
-                <th class="px-4 py-2">Customer ID</th>
-                <th class="px-4 py-2">Name</th>
-                <th class="px-4 py-2">Company</th>
-                <th class="px-4 py-2">City</th>
-                <th class="px-4 py-2">State</th>
-                <th class="px-4 py-2">Country</th>
-                <th class="px-4 py-2">Industry</th>
-                <th class="px-4 py-2">Onboarding Date</th>
-                <th class="px-4 py-2">Set Reminder</th>
-                <th class="px-4 py-2">Reminder Info</th>
-                <th class="px-4 py-2">Follow-up Status</th>
-                <th class="px-4 py-2">New Follow-up Remark</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for c in customers %}
-        <tr class="border-t">
-            <td class="px-4 py-2">{{ c[1] }}</td>
-            <td class="px-4 py-2">{{ c[2] }}</td>
-            <td class="px-4 py-2">{{ c[3] }}</td>
-            <td class="px-4 py-2">{{ c[5] }}</td>
-            <td class="px-4 py-2">{{ c[6] }}</td>
-            <td class="px-4 py-2">{{ c[7] }}</td>
-            <td class="px-4 py-2">{{ c[8] }}</td>
-            <td class="px-4 py-2">{{ c[12] }}</td>
-
-            <!-- Set Reminder Button -->
-            <td class="px-4 py-2">
-                <button onclick="openReminderModal({{ c[0] }})"
-                        class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
-                    Set Reminder
-                </button>
-            </td>
-
-            <!-- Reminder Info -->
-            <td class="px-4 py-2" id="reminder_info_{{ c[0] }}">
-                {% for r in reminders %}
-                    {% if r[1] == c[0] %}
-                        <div class="mb-2">
-                            📅 <b>{{ r[2] }}</b><br>
-                            📝 {{ r[3] }}
-                        </div>
-                    {% endif %}
+         {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages"> {# Use flash-messages class #}
+                {% for message in messages %}
+                    <li class="error">{{ message }}</li> {# Use error class for messages #}
                 {% endfor %}
-            </td>
+            </ul>
+            {% endif %}
+        {% endwith %}
 
-            <!-- Followup Status -->
-            <td class="px-4 py-2" id="followup_info_{{ c[0] }}">
-                {% set count = 1 %}
-                {% for f in followups %}
-                    {% if f[1] == c[0] %}
-                        <div class="mb-2">
-                            {{ count }}. {{ f[2] }} <br>
-                            <span class="text-gray-500 text-xs">{{ f[3] }}</span>
-                        </div>
-                        {% set count = count + 1 %}
-                    {% endif %}
+        <div class="table-wrapper"> {# Added table-wrapper for overflow #}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th> {# Changed from Customer ID #}
+                        <th>Customer ID</th>
+                        <th>Name</th>
+                        <th>Company</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>Industry</th>
+                        <th>Onboarding Date</th>
+                        <th>Set Reminder</th>
+                        <th>Reminder Info</th>
+                        <th>Follow-up Status</th>
+                        <th>New Follow-up Remark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for c in customers %}
+                <tr>
+                    <td>{{ c[0] }}</td> {# rowid #}
+                    <td>{{ c[2] }}</td> {# customer_id - Corrected Index #}
+                    <td>{{ c[3] }}</td> {# name - Corrected Index #}
+                    <td>{{ c[4] }}</td> {# company - Corrected Index #}
+                    <td>{{ c[6] }}</td> {# city - Corrected Index #}
+                    <td>{{ c[7] }}</td> {# state - Corrected Index #}
+                    <td>{{ c[8] }}</td> {# country - Corrected Index #}
+                    <td>{{ c[9] }}</td> {# industry - Corrected Index #}
+                    <td>{{ c[13] }}</td> {# onboarding_date - Corrected Index #}
+
+                    <td>
+                        <button onclick="openReminderModal({{ c[0] }})" class="action-button"> {# Added class #}
+                            Set Reminder
+                        </button>
+                    </td>
+
+                    <td>
+                        {% for r in reminders %}
+                            {# r[1] is customer_id in reminders table (should be rowid of customer) #}
+                            {% if r[1] == c[0] %}
+                                <div class="onboarded-customer-info"> {# Added class #}
+                                    📅 <b>{{ r[2] }}</b><br> {# reminder_datetime #}
+                                    📝 {{ r[3] }} {# message #}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td>
+                        {% set count = 1 %}
+                        {% for f in followups %}
+                             {# f[1] is customer_id in followups table (should be rowid of customer) #}
+                            {% if f[1] == c[0] %}
+                                <div class="onboarded-customer-info"> {# Added class #}
+                                    {{ count }}. {{ f[2] }} <br> {# remark #}
+                                    <span class="timestamp">{{ f[3] }}</span> {# Added class #}
+                                </div>
+                                {% set count = count + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td class="onboarded-customer-actions"> {# Added class #}
+                        <form action="/add_followup/{{ c[0] }}" method="POST"> {# Use rowid for the route #}
+                            <textarea name="followup_text" maxlength="400" required placeholder="Write follow-up (max 400 chars)"></textarea>
+                            <button type="submit">
+                                Submit
+                            </button>
+                        </form>
+                    </td>
+
+                </tr>
                 {% endfor %}
-            </td>
-
-            <!-- Add Follow-up Remark Form -->
-            <td class="px-4 py-2">
-                <form action="/add_followup/{{ c[0] }}" method="POST">
-                    <textarea name="followup_text" maxlength="400" required
-                              class="border p-1 w-full rounded mb-2"
-                              placeholder="Write follow-up (max 400 chars)"></textarea>
-                    <button type="submit"
-                            class="bg-green-500 text-white px-3 py-1 rounded text-sm w-full">
-                        Submit
-                    </button>
-                </form>
-            </td>
-
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<!-- Reminder Modal -->
-<div id="reminderModal" class="modal hidden fixed z-10 inset-0 overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen">
-        <div class="modal-content bg-white p-6 rounded shadow-md w-96">
-            <h2 class="text-xl font-bold mb-4">Set Reminder</h2>
-            <form id="reminderForm" method="post">
-                <label class="block mb-1">Reminder Date and Time:</label>
-                <input type="datetime-local" id="reminder_date" name="reminder_date" required
-                       class="border p-2 w-full rounded mb-4">
-
-                <label class="block mb-1">Reminder Message:</label>
-                <textarea id="reminder_message" name="reminder_message" required
-                          class="border p-2 w-full rounded mb-4"></textarea>
-
-                <div class="flex justify-end">
-                    <button type="submit"
-                            class="bg-blue-500 text-white px-4 py-2 rounded">
-                        Set Reminder
-                    </button>
-                </div>
-            </form>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-<!-- Javascript Logic -->
-<script>
-let currentCustomerId = null;
+<div id="reminderModal" class="modal"> {# Using modal class #}
+    <div class="modal-content"> {# Using modal-content class #}
+        <h2>Set Reminder</h2>
+        <form id="reminderForm" method="post">
+            <div> {# Wrap in div for spacing #}
+                <label for="reminder_date">Reminder Date and Time:</label>
+                <input type="datetime-local" id="reminder_date" name="reminder_date" required>
+            </div>
 
-function openReminderModal(customerId) {
-    currentCustomerId = customerId;
+            <div> {# Wrap in div for spacing #}
+                <label for="reminder_message">Reminder Message:</label>
+                <textarea id="reminder_message" name="reminder_message" required></textarea>
+            </div>
+
+            <div class="button-group"> {# Using button-group class #}
+                <button type="submit">
+                    Set Reminder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentCustomerRowId = null; // Use rowid
+
+function openReminderModal(customerRowId) {
+    currentCustomerRowId = customerRowId;
     const modal = document.getElementById('reminderModal');
-    modal.classList.remove('hidden');
-    document.getElementById('reminderForm').action = `/set_reminder/${customerId}`;
+    modal.style.display = 'flex'; // Use flex to center
+    // Update the form action to use the rowid
+    document.getElementById('reminderForm').action = `/set_reminder/${customerRowId}`;
 }
 
 // Close modal when clicking outside
 window.onclick = function(event) {
     const modal = document.getElementById('reminderModal');
     if (event.target === modal) {
-        modal.classList.add('hidden');
+        modal.style.display = 'none';
     }
 };
 
 // Auto check reminders every 30 seconds
 setInterval(function() {
     fetch('/check_reminders')
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            // Log the error or handle it appropriately
+            console.error('Error checking reminders:', response.statusText);
+            return []; // Return empty array to prevent further processing
+        }
+        return response.json();
+    })
     .then(data => {
         data.forEach(reminder => {
+            // Replace alert with a more user-friendly notification (e.g., a modal or toast)
+            console.log(`🔔 Reminder for ${reminder.customer_name}: ${reminder.reminder_message}`);
+            // For demonstration, using alert:
             alert(`🔔 Reminder for ${reminder.customer_name}: ${reminder.reminder_message}`);
             // Play a notification sound (if you have a sound file)
             // new Audio('/static/notification.mp3').play();
         });
-    });
-}, 30000);
+    })
+    .catch(error => console.error('Error fetching reminders:', error));
+}, 30000); // Check every 30 seconds
 </script>
-
-<style>
-.modal { background-color: rgba(0,0,0,0.5); }
-</style>
 
 </body>
 </html>

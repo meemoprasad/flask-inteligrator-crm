@@ -9,55 +9,98 @@
 <body>
 
 <nav class="navbar">
-    <a href="/">Dashboard</a>
-    <a href="/customer_management">Customer Management</a>
-    <a href="/onboarded_customers">Onboarded Customers</a>
+    <div class="navbar-links"> {# Added wrapper div #}
+        <a href="/dashboard">Dashboard</a>
+        {% if 'customer_management' in session.get('page_access', []) or session.get('role') == 'admin' %}
+             <a href="/customer_management">Customer Management</a>
+        {% endif %}
+        {% if 'onboarded_customers' in session.get('page_access', []) or session.get('role') == 'admin' %}
+            <a href="/onboarded_customers">Onboarded Customers</a>
+        {% endif %}
+        {% if session.get('role') == 'admin' %}
+            <a href="/user_management">User Management</a>
+        {% endif %}
+    </div>
+     <div class="welcome-info"> {# Added wrapper div #}
+        <span>Welcome, {{ session.get('username', 'Guest') }}!</span>
+        <a href="/logout">Logout</a>
+    </div>
 </nav>
 
-<div class="container">
+<div class="container"> {# Using container class for layout #}
 
-  <div class="form-container">
+  <div class="form-container"> {# Using form-container class #}
     <h1>Customer Onboarding</h1>
+
+     {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages"> {# Use flash-messages class #}
+            {% for message in messages %}
+                <li class="error">{{ message }}</li> {# Use error class for messages #}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
     <form action="/add_customer" method="post">
 
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
 
-      <label for="company">Company:</label>
-      <input type="text" id="company" name="company" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="company">Company:</label>
+        <input type="text" id="company" name="company" required>
+      </div>
 
-      <label for="address">Address:</label>
-      <input type="text" id="address" name="address" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required>
+      </div>
 
-      <label for="city">City:</label>
-      <input type="text" id="city" name="city" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+      </div>
 
-      <label for="state">State:</label>
-      <input type="text" id="state" name="state" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required>
+      </div>
 
-      <label for="country">Country:</label>
-      <input type="text" id="country" name="country" value="India">
+      <div> {# Wrap in div for spacing #}
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country" value="India">
+      </div>
 
-      <label for="industry">Industry Type:</label>
-      <input type="text" id="industry" name="industry" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="industry">Industry Type:</label>
+        <input type="text" id="industry" name="industry" required>
+      </div>
 
-      <label for="core_business">Core Business:</label>
-      <input type="text" id="core_business" name="core_business" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="core_business">Core Business:</label>
+        <input type="text" id="core_business" name="core_business" required>
+      </div>
 
-      <label for="contact">Contact:</label>
-      <input type="text" id="contact" name="contact" required>
+      <div> {# Wrap in div for spacing #}
+        <label for="contact">Contact:</label>
+        <input type="text" id="contact" name="contact" required>
+      </div>
 
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email">
+      <div> {# Wrap in div for spacing #}
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+      </div>
 
       <button type="submit">Add Customer</button>
     </form>
   </div>
 
-  <div class="list-container">
-    <a href="/" class="view-dashboard-button">Go back to Dashboard</a>
+  <div class="list-container"> {# Using list-container for the table #}
     <h2>Customer List</h2>
-    <a href="/onboarded_customers" class="view-onboarded-button">View Onboarded Customers</a>
+    {# Removed inline view-onboarded-button and view-dashboard-button as they are in the navbar #}
 
     <form method="get" action="/customer_management" class="search-filter-form">
       <input type="text" name="search" placeholder="Search by name or company">
@@ -67,10 +110,11 @@
       <a href="/download_excel" class="download-button">Download Excel</a>
     </form>
 
-    <div class="table-wrapper">
+    <div class="table-wrapper"> {# Added table-wrapper for overflow #}
       <table>
         <thead>
           <tr>
+            <th>ID</th> {# Changed from Customer ID #}
             <th>Customer ID</th>
             <th>Name</th>
             <th>Company</th>
@@ -89,18 +133,19 @@
         <tbody>
           {% for c in customers %}
           <tr>
-            <td>{{ c[1] }}</td>
-            <td>{{ c[2] }}</td>
-            <td>{{ c[3] }}</td>
-            <td>{{ c[4] }}</td>
-            <td>{{ c[5] }}</td>
-            <td>{{ c[6] }}</td>
-            <td>{{ c[7] }}</td>
-            <td>{{ c[8] }}</td>
-            <td>{{ c[9] }}</td>
-            <td>{{ c[10] }}</td>
-            <td>{{ c[11] }}</td>
-            <td>{{ c[12] }}</td>
+            <td>{{ c[0] }}</td> {# rowid #}
+            <td>{{ c[2] }}</td> {# customer_id - Corrected Index #}
+            <td>{{ c[3] }}</td> {# name - Corrected Index #}
+            <td>{{ c[4] }}</td> {# company - Corrected Index #}
+            <td>{{ c[5] }}</td> {# address - Corrected Index #}
+            <td>{{ c[6] }}</td> {# city - Corrected Index #}
+            <td>{{ c[7] }}</td> {# state - Corrected Index #}
+            <td>{{ c[8] }}</td> {# country - Corrected Index #}
+            <td>{{ c[9] }}</td> {# industry - Corrected Index #}
+            <td>{{ c[10] }}</td> {# core_business - Corrected Index #}
+            <td>{{ c[11] }}</td> {# contact - Corrected Index #}
+            <td>{{ c[12] }}</td> {# email - Corrected Index #}
+            <td>{{ c[13] }}</td> {# onboarding_date - Corrected Index #}
             <td>
               <a href="{{ url_for('edit_customer', id=c[0]) }}" class="action-link edit-link">Edit</a>
               <a href="{{ url_for('delete_customer', id=c[0]) }}" class="action-link delete-link" onclick="return confirm('Delete this customer?')">Delete</a>

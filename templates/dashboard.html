@@ -7,23 +7,45 @@
 </head>
 <body>
 
-<nav class="navbar bg-white p-4 shadow mb-6">
-    <a href="/">Dashboard</a> |
-    <a href="/customer_management">Customer Management</a> |
-    <a href="/onboarded_customers">View Onboarded Customers</a>
+<nav class="navbar">
+    <div class="navbar-links"> {# Added wrapper div #}
+        <a href="/dashboard">Dashboard</a>
+        {% if 'customer_management' in session.get('page_access', []) or session.get('role') == 'admin' %}
+            <a href="/customer_management">Customer Management</a>
+        {% endif %}
+        {% if 'onboarded_customers' in session.get('page_access', []) or session.get('role') == 'admin' %}
+            <a href="/onboarded_customers">View Onboarded Customers</a>
+        {% endif %}
+        {% if session.get('role') == 'admin' %}
+            <a href="/user_management">User Management</a>
+        {% endif %}
+    </div>
+    <div class="welcome-info"> {# Added wrapper div #}
+        <span>Welcome, {{ session.get('username', 'Guest') }}!</span>
+        <a href="/logout">Logout</a>
+    </div>
 </nav>
 
-<div class="dashboard-container text-center">
-    <h1 class="text-4xl font-bold mb-4">Welcome to Customer Management Dashboard</h1>
-    <p class="text-lg mb-8">Manage customers, follow-ups, and reminders easily from here!</p>
+<div class="dashboard-container">
+    <h1>Welcome, {{ session.get('username', 'Guest') }}!</h1>
+    <p>Manage your tasks from this dashboard.</p>
 
-    <div class="dashboard-buttons space-x-4">
-        <a href="/customer_management" class="dashboard-link bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded">
-            Add / Manage Customers
-        </a>
-        <a href="/onboarded_customers" class="dashboard-link bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded">
-            View Onboarded Customers
-        </a>
+    <div class="dashboard-buttons">
+        {% if 'customer_management' in session.get('page_access', []) or session.get('role') == 'admin' %}
+            <a href="/customer_management" class="dashboard-link blue"> {# Added class for specific styling #}
+                Add / Manage Customers
+            </a>
+        {% endif %}
+        {% if 'onboarded_customers' in session.get('page_access', []) or session.get('role') == 'admin' %}
+            <a href="/onboarded_customers" class="dashboard-link">
+                View Onboarded Customers
+            </a>
+        {% endif %}
+        {% if session.get('role') == 'admin' %}
+            <a href="/user_management" class="dashboard-link yellow"> {# Added class for specific styling #}
+                Manage Users
+            </a>
+        {% endif %}
     </div>
 </div>
 

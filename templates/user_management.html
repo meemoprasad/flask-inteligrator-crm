@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Added style for password cell */
+        .password-cell {
+            position: relative;
+        }
+        .password-toggle-icon {
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 1.1em; /* Adjust size as needed */
+            vertical-align: middle; /* Align icon vertically */
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-links"> {# Added wrapper div #}
+        <a href="/dashboard">Dashboard</a>
+        <a href="/create_user">Create User</a>
+    </div>
+    <div class="welcome-info"> {# Added wrapper div #}
+        <span>Welcome, {{ session.get('username', 'Guest') }}!</span>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container"> {# Using container class for layout #}
+    <div class="list-container"> {# Using list-container for the table #}
+        <h2>User Management</h2>
+
+         {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages"> {# Use flash-messages class #}
+                {% for message in messages %}
+                    <li class="error">{{ message }}</li> {# Use error class for messages #}
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="table-wrapper"> {# Added table-wrapper for overflow #}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Password</th> {# Added Password column header #}
+                        <th>Role</th>
+                        <th>Page Access</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Business Name</th>
+                        <th>Address</th>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user['username'] }}</td>
+                        <td class="password-cell"> {# Added class for password cell #}
+                            <span class="password-hidden">********</span> {# Initially hidden password #}
+                            <span class="password-visible" style="display: none;">{{ user['password'] }}</span> {# Visible password, initially hidden #}
+                            <span class="password-toggle-icon" onclick="togglePasswordVisibility(this)">👁️</span> {# Toggle icon #}
+                        </td>
+                        <td>{{ user['role'] }}</td>
+                        <td>{{ user['page_access'] }}</td>
+                        <td>{{ user['name'] }}</td>
+                        <td>{{ user['phone'] }}</td>
+                        <td>{{ user['email'] }}</td>
+                        <td>{{ user['business_name'] }}</td>
+                        <td>{{ user['address'] }}</td>
+                        <td>{{ user['state'] }}</td>
+                        <td>{{ user['country'] }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_user', username=user['username']) }}" class="action-link edit-link">Edit</a>
+                            <a href="{{ url_for('delete_user', username=user['username']) }}" class="action-link delete-link" onclick="return confirm('Delete user {{ user['username'] }}?')">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(iconElement) {
+        const passwordCell = iconElement.parentElement;
+        const hiddenSpan = passwordCell.querySelector('.password-hidden');
+        const visibleSpan = passwordCell.querySelector('.password-visible');
+
+        if (hiddenSpan.style.display === 'none') {
+            hiddenSpan.style.display = 'inline';
+            visibleSpan.style.display = 'none';
+            iconElement.textContent = '👁️'; // Eye icon
+        } else {
+            hiddenSpan.style.display = 'none';
+            visibleSpan.style.display = 'inline';
+            iconElement.textContent = '🙈'; // Hide icon
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -4,48 +4,76 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
-    text-color: #1a2835d8;
+    color: #1a2835d8; /* Corrected text-color to color */
+    line-height: 1.6; /* Added for better readability */
 }
 
 .container {
     display: flex;
     flex-direction: row;
     min-height: 100vh;
+    width: 100%; /* Ensure container takes full width */
+    max-width: 1200px; /* Optional: Limit max width for large screens */
+    margin: 0 auto; /* Center container */
+    padding: 20px; /* Add some padding */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
+
+/* Ensure main content area takes remaining width when form is present */
+.container .list-container,
+.container .form-container {
+    flex-grow: 1; /* Allow these containers to grow */
+    flex-basis: 0; /* Allow them to shrink below their content size */
+}
+
 
 /* Left side - Form */
 .form-container {
-    width: 30%;
+    width: 400px; /* Fixed width for forms */
+    max-width: 100%; /* Ensure responsiveness */
     background-color: #ffffff;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
+    margin: 0 auto; /* Center form containers when they are the main content */
 }
 
-.form-container h1 {
+.form-container h1,
+.form-container h2 { /* Added h2 for consistency */
     font-size: 24px;
     margin-bottom: 20px;
-    text-color: #0b4cf1eb;
+    color: #0b4cf1eb; /* Corrected text-color to color */
+    text-align: center; /* Center headings */
 }
 
 .form-container form {
     display: flex;
     flex-direction: column;
+    gap: 15px; /* Added gap between form elements */
 }
 
 .form-container label {
-    margin-top: 10px;
+    margin-top: 0; /* Removed extra margin */
     font-weight: 600;
+    display: block; /* Ensure label is on its own line */
+    margin-bottom: 5px; /* Space between label and input */
 }
 
-.form-container input {
-    padding: 8px;
-    margin-top: 5px;
+.form-container input[type="text"],
+.form-container input[type="password"],
+.form-container input[type="email"],
+.form-container input[type="datetime-local"], /* Added datetime-local */
+.form-container select, /* Added select */
+.form-container textarea { /* Added textarea */
+    padding: 10px; /* Increased padding */
+    margin-top: 0; /* Removed extra margin */
     border: 1px solid #ccc;
     border-radius: 4px;
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding and border */
 }
 
-.form-container button {
+.form-container button[type="submit"] { /* Targeted submit button */
     margin-top: 20px;
     padding: 10px;
     background-color: #007BFF;
@@ -53,15 +81,44 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 16px; /* Increased font size */
 }
 
-.form-container button:hover {
+.form-container button[type="submit"]:hover {
     background-color: #0056b3;
 }
 
-/* Right side - Customer list */
+.form-container .button-group { /* Added a class for button groups */
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    gap: 10px; /* Space between buttons */
+    margin-top: 20px;
+}
+
+.form-container .button-group button,
+.form-container .button-group a {
+     padding: 10px 15px; /* Added padding */
+     border-radius: 4px;
+     text-decoration: none; /* Remove underline for links */
+     font-size: 16px;
+     cursor: pointer;
+     display: inline-block; /* Ensure links behave like buttons */
+     text-align: center;
+}
+
+.form-container .button-group .cancel-link { /* Style for cancel link */
+    background-color: #6c757d;
+    color: white;
+}
+
+.form-container .button-group .cancel-link:hover {
+    background-color: #5a6268;
+}
+
+
+/* Right side - Customer list and User Management */
 .list-container {
-    width: 70%;
+    width: 100%; /* Full width in this layout */
     padding: 20px;
     overflow-x: auto;
     box-sizing: border-box;
@@ -70,6 +127,7 @@ body {
 .list-container h2 {
     font-size: 22px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .search-filter-form {
@@ -77,6 +135,7 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
+    align-items: center; /* Align items vertically */
 }
 
 .search-filter-form input {
@@ -85,6 +144,7 @@ body {
     border-radius: 4px;
     flex: 1;
     min-width: 150px;
+    box-sizing: border-box;
 }
 
 .search-filter-form button {
@@ -94,6 +154,7 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 14px; /* Adjusted font size */
 }
 
 .search-filter-form button:hover {
@@ -101,11 +162,13 @@ body {
 }
 
 .download-button {
+    display: inline-block; /* Ensure link behaves like a block */
     padding: 8px 12px;
     background-color: #17a2b8;
     color: white;
     text-decoration: none;
     border-radius: 4px;
+    font-size: 14px; /* Adjusted font size */
 }
 
 .download-button:hover {
@@ -114,18 +177,23 @@ body {
 
 .table-wrapper {
     overflow-x: auto;
+    background-color: white; /* Added background */
+    padding: 10px; /* Added padding */
+    border-radius: 8px; /* Added rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow */
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background-color: white;
+    /* background-color: white; Removed as wrapper has it */
 }
 
 table th, table td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px; /* Increased padding */
     text-align: left;
+    white-space: nowrap; /* Prevent text wrapping in table cells */
 }
 
 table th {
@@ -137,18 +205,38 @@ table th {
     margin-right: 10px;
     text-decoration: none;
     font-weight: 600;
+    padding: 5px 10px; /* Added padding */
+    border-radius: 4px; /* Added rounded corners */
+    display: inline-block; /* Allow padding and margin */
 }
 
 .edit-link {
-    color: #007BFF;
+    color: white; /* Changed text color for better visibility on colored background */
+    background-color: #ffc107; /* Yellow background */
+}
+.edit-link:hover {
+    background-color: #e0a800;
 }
 
+
 .delete-link {
-    color: #dc3545;
+    color: white; /* Changed text color */
+    background-color: #dc3545; /* Red background */
 }
+.delete-link:hover {
+    background-color: #c82333;
+}
+
 .navbar {
     background-color: #007BFF;
-    padding: 10px;
+    padding: 10px 20px; /* Added horizontal padding */
+    display: flex;
+    justify-content: space-between; /* Distribute items */
+    align-items: center; /* Vertically align items */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow */
+}
+
+.navbar .navbar-links { /* Wrapper for left-side links */
     display: flex;
     gap: 20px;
 }
@@ -157,34 +245,88 @@ table th {
     color: white;
     text-decoration: none;
     font-weight: bold;
+    font-size: 16px; /* Adjusted font size */
 }
 
 .navbar a:hover {
     text-decoration: underline;
 }
 
+.navbar .welcome-info { /* Wrapper for welcome and logout */
+    color: white;
+    font-size: 16px;
+}
+
+.navbar .welcome-info a {
+    margin-left: 15px; /* Space between welcome and logout */
+}
+
+
 .dashboard-container {
     text-align: center;
     padding: 50px;
+    background-color: white; /* Added background */
+    max-width: 800px; /* Limit width */
+    margin: 40px auto; /* Center and add margin */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow */
 }
+
+.dashboard-container h1 {
+    font-size: 32px; /* Adjusted font size */
+    margin-bottom: 15px;
+    color: #0b4cf1eb;
+}
+
+.dashboard-container p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #555; /* Darker gray text */
+}
+
 
 .dashboard-buttons {
     margin-top: 30px;
+    display: flex; /* Use flex for buttons */
+    justify-content: center; /* Center buttons */
+    gap: 20px; /* Space between buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
 }
 
 .dashboard-link {
     padding: 15px 30px;
-    margin: 10px;
+    /* margin: 10px; Removed margin, using gap in flex */
     background-color: #28a745;
     color: white;
     text-decoration: none;
     border-radius: 8px;
+    font-size: 18px; /* Increased font size */
+    font-weight: bold; /* Bold text */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
 }
 
 .dashboard-link:hover {
     background-color: #218838;
 }
-.view-onboarded-button {
+
+/* Specific dashboard link colors */
+.dashboard-link.blue {
+    background-color: #007BFF;
+}
+.dashboard-link.blue:hover {
+    background-color: #0056b3;
+}
+
+.dashboard-link.yellow {
+    background-color: #ffc107;
+    color: #333; /* Darker text for yellow */
+}
+.dashboard-link.yellow:hover {
+     background-color: #e0a800;
+}
+
+.view-onboarded-button,
+.view-dashboard-button {
     display: inline-block;
     margin-bottom: 15px;
     padding: 10px 20px;
@@ -193,22 +335,214 @@ table th {
     text-decoration: none;
     border-radius: 6px;
     font-weight: bold;
+     transition: background-color 0.3s ease;
 }
 
-.view-onboarded-button:hover {
-    background-color: #e0a800;
-}
-.view-dashboard-button {
-    display: inline-block;
-    margin-bottom: 15px;
-    padding: 10px 20px;
-    background-color: #ffc158;
-    color: black;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: bold;
-}
-
+.view-onboarded-button:hover,
 .view-dashboard-button:hover {
     background-color: #e0a800;
+}
+
+/* Styles for Flash Messages */
+.flash-messages {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.flash-messages li {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.flash-messages li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.flash-messages li.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%; /* Could be responsive */
+    max-width: 500px; /* Max width */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-size: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.modal-content input[type="datetime-local"],
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-content .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.modal-content button[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-content button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Added styles for Onboarded Customers page */
+.onboarded-customer-info {
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+.onboarded-customer-info:last-child {
+    border-bottom: none;
+}
+
+.onboarded-customer-info b {
+    display: block; /* Ensure date is on a new line */
+    margin-bottom: 2px;
+}
+
+.onboarded-customer-actions form {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.onboarded-customer-actions textarea {
+     width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 60px; /* Minimum height for textarea */
+}
+
+.onboarded-customer-actions button {
+    padding: 8px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.onboarded-customer-actions button:hover {
+     background-color: #218838;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack containers vertically on smaller screens */
+        padding: 10px;
+    }
+
+    .form-container {
+        width: 100%; /* Full width */
+        margin-bottom: 20px; /* Space between form and list */
+        padding: 15px;
+    }
+
+    .list-container {
+         width: 100%; /* Full width */
+         padding: 15px;
+    }
+
+    .navbar {
+        flex-direction: column; /* Stack navbar items */
+        gap: 10px;
+        align-items: flex-start;
+    }
+     .navbar .navbar-links,
+     .navbar .welcome-info {
+         flex-direction: column;
+         gap: 5px;
+     }
+
+     .dashboard-buttons {
+         flex-direction: column; /* Stack dashboard buttons */
+         gap: 10px;
+     }
+
+     .dashboard-link {
+         width: 100%; /* Full width buttons */
+         padding: 12px 20px;
+         font-size: 16px;
+     }
+
+     .search-filter-form {
+         flex-direction: column; /* Stack search/filter inputs and buttons */
+         gap: 10px;
+     }
+
+     .search-filter-form input,
+     .search-filter-form button,
+     .download-button {
+         width: 100%; /* Full width */
+         box-sizing: border-box;
+     }
+
+     table th, table td {
+         padding: 8px; /* Slightly less padding on small screens */
+     }
 }

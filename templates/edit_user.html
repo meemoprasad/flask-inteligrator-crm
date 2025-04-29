@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+     <div class="navbar-links"> {# Added wrapper div #}
+        <a href="/dashboard">Dashboard</a>
+        <a href="/user_management">User Management</a>
+    </div>
+     <div class="welcome-info"> {# Added wrapper div #}
+        <span>Welcome, {{ session.get('username', 'Guest') }}!</span>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="form-container"> {# Using form-container class #}
+    <h2>Edit User: {{ user.username }}</h2>
+
+     {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages"> {# Use flash-messages class #}
+            {% for message in messages %}
+                <li class="error">{{ message }}</li> {# Use error class for messages #}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post">
+        <div> {# Wrap in div for spacing #}
+            <label for="password">New Password:</label>
+            <input type="text" id="password" name="password" required>
+        </div>
+        <div> {# Wrap in div for spacing #}
+            <label for="page_access">Page Access (Hold Ctrl/Cmd to select multiple):</label>
+            <select id="page_access" name="page_access" multiple size="5"> {# Added multiple and size #}
+                 {% for page in available_pages %}
+                    <option value="{{ page }}" {% if page in user.page_access %}selected{% endif %}>{{ page.replace('_', ' ').title() }}</option> {# Select current pages #}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="button-group"> {# Using button-group class #}
+            <button type="submit">Save</button>
+            <a href="{{ url_for('user_management') }}" class="cancel-link">Cancel</a> {# Using cancel-link class #}
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
