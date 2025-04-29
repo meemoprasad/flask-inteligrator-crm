@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Onboarded Customers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<!-- Navbar -->
+<nav class="navbar bg-white p-4 shadow mb-6">
+    <a href="/">Dashboard</a> |
+    <a href="/customer_management">Customer Management</a> |
+    <a href="/onboarded_customers" class="font-bold">Onboarded Customers</a>
+</nav>
+
+<!-- Main Container -->
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-4">Onboarded Customers</h1>
+
+    <table class="min-w-full bg-white rounded shadow-md overflow-hidden">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-4 py-2">Customer ID</th>
+                <th class="px-4 py-2">Name</th>
+                <th class="px-4 py-2">Company</th>
+                <th class="px-4 py-2">City</th>
+                <th class="px-4 py-2">State</th>
+                <th class="px-4 py-2">Country</th>
+                <th class="px-4 py-2">Industry</th>
+                <th class="px-4 py-2">Onboarding Date</th>
+                <th class="px-4 py-2">Set Reminder</th>
+                <th class="px-4 py-2">Reminder Info</th>
+                <th class="px-4 py-2">Follow-up Status</th>
+                <th class="px-4 py-2">New Follow-up Remark</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in customers %}
+        <tr class="border-t">
+            <td class="px-4 py-2">{{ c[1] }}</td>
+            <td class="px-4 py-2">{{ c[2] }}</td>
+            <td class="px-4 py-2">{{ c[3] }}</td>
+            <td class="px-4 py-2">{{ c[5] }}</td>
+            <td class="px-4 py-2">{{ c[6] }}</td>
+            <td class="px-4 py-2">{{ c[7] }}</td>
+            <td class="px-4 py-2">{{ c[8] }}</td>
+            <td class="px-4 py-2">{{ c[12] }}</td>
+
+            <!-- Set Reminder Button -->
+            <td class="px-4 py-2">
+                <button onclick="openReminderModal({{ c[0] }})"
+                        class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                    Set Reminder
+                </button>
+            </td>
+
+            <!-- Reminder Info -->
+            <td class="px-4 py-2" id="reminder_info_{{ c[0] }}">
+                {% for r in reminders %}
+                    {% if r[1] == c[0] %}
+                        <div class="mb-2">
+                            📅 <b>{{ r[2] }}</b><br>
+                            📝 {{ r[3] }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </td>
+
+            <!-- Followup Status -->
+            <td class="px-4 py-2" id="followup_info_{{ c[0] }}">
+                {% set count = 1 %}
+                {% for f in followups %}
+                    {% if f[1] == c[0] %}
+                        <div class="mb-2">
+                            {{ count }}. {{ f[2] }} <br>
+                            <span class="text-gray-500 text-xs">{{ f[3] }}</span>
+                        </div>
+                        {% set count = count + 1 %}
+                    {% endif %}
+                {% endfor %}
+            </td>
+
+            <!-- Add Follow-up Remark Form -->
+            <td class="px-4 py-2">
+                <form action="/add_followup/{{ c[0] }}" method="POST">
+                    <textarea name="followup_text" maxlength="400" required
+                              class="border p-1 w-full rounded mb-2"
+                              placeholder="Write follow-up (max 400 chars)"></textarea>
+                    <button type="submit"
+                            class="bg-green-500 text-white px-3 py-1 rounded text-sm w-full">
+                        Submit
+                    </button>
+                </form>
+            </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Reminder Modal -->
+<div id="reminderModal" class="modal hidden fixed z-10 inset-0 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="modal-content bg-white p-6 rounded shadow-md w-96">
+            <h2 class="text-xl font-bold mb-4">Set Reminder</h2>
+            <form id="reminderForm" method="post">
+                <label class="block mb-1">Reminder Date and Time:</label>
+                <input type="datetime-local" id="reminder_date" name="reminder_date" required
+                       class="border p-2 w-full rounded mb-4">
+
+                <label class="block mb-1">Reminder Message:</label>
+                <textarea id="reminder_message" name="reminder_message" required
+                          class="border p-2 w-full rounded mb-4"></textarea>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                            class="bg-blue-500 text-white px-4 py-2 rounded">
+                        Set Reminder
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Javascript Logic -->
+<script>
+let currentCustomerId = null;
+
+function openReminderModal(customerId) {
+    currentCustomerId = customerId;
+    const modal = document.getElementById('reminderModal');
+    modal.classList.remove('hidden');
+    document.getElementById('reminderForm').action = `/set_reminder/${customerId}`;
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('reminderModal');
+    if (event.target === modal) {
+        modal.classList.add('hidden');
+    }
+};
+
+// Auto check reminders every 30 seconds
+setInterval(function() {
+    fetch('/check_reminders')
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(reminder => {
+            alert(`🔔 Reminder for ${reminder.customer_name}: ${reminder.reminder_message}`);
+            // Play a notification sound (if you have a sound file)
+            // new Audio('/static/notification.mp3').play();
+        });
+    });
+}, 30000);
+</script>
+
+<style>
+.modal { background-color: rgba(0,0,0,0.5); }
+</style>
+
+</body>
+</html>
