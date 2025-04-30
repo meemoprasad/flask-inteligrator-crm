@@ -8,43 +8,43 @@
 <body>
 
 <nav class="navbar">
-    <div class="navbar-links"> {# Added wrapper div #}
+    <div class="navbar-links">
         <a href="/dashboard">Dashboard</a>
         {% if 'customer_management' in session.get('page_access', []) or session.get('role') == 'admin' %}
              <a href="/customer_management">Customer Management</a>
         {% endif %}
         {% if 'onboarded_customers' in session.get('page_access', []) or session.get('role') == 'admin' %}
-            <a href="/onboarded_customers" class="font-bold">Onboarded Customers</a> {# Kept font-bold for emphasis #}
+            <a href="/onboarded_customers" class="font-bold">Onboarded Customers</a>
         {% endif %}
         {% if session.get('role') == 'admin' %}
             <a href="/user_management">User Management</a>
         {% endif %}
     </div>
-     <div class="welcome-info"> {# Added wrapper div #}
+    <div class="welcome-info">
         <span>Welcome, {{ session.get('username', 'Guest') }}!</span>
         <a href="/logout">Logout</a>
     </div>
 </nav>
 
-<div class="container"> {# Using container class #}
-    <div class="list-container"> {# Using list-container class #}
-        <h1 class="page-title">Onboarded Customers</h1> {# Changed to h1 and added class #}
+<div class="container">
+    <div class="list-container">
+        <h1 class="page-title">Onboarded Customers</h1>
 
-         {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <ul class="flash-messages"> {# Use flash-messages class #}
+                <ul class="flash-messages">
                 {% for message in messages %}
-                    <li class="error">{{ message }}</li> {# Use error class for messages #}
+                    <li class="error">{{ message }}</li>
                 {% endfor %}
             </ul>
             {% endif %}
         {% endwith %}
 
-        <div class="table-wrapper"> {# Added table-wrapper for overflow #}
+        <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th> {# Changed from Customer ID #}
+                        <th>ID</th>
                         <th>Customer ID</th>
                         <th>Name</th>
                         <th>Company</th>
@@ -62,29 +62,28 @@
                 <tbody>
                 {% for c in customers %}
                 <tr>
-                    <td>{{ c[0] }}</td> {# rowid #}
-                    <td>{{ c[2] }}</td> {# customer_id - Corrected Index #}
-                    <td>{{ c[3] }}</td> {# name - Corrected Index #}
-                    <td>{{ c[4] }}</td> {# company - Corrected Index #}
-                    <td>{{ c[6] }}</td> {# city - Corrected Index #}
-                    <td>{{ c[7] }}</td> {# state - Corrected Index #}
-                    <td>{{ c[8] }}</td> {# country - Corrected Index #}
-                    <td>{{ c[9] }}</td> {# industry - Corrected Index #}
-                    <td>{{ c[13] }}</td> {# onboarding_date - Corrected Index #}
+                    <td>{{ c[0] }}</td>
+                    <td>{{ c[2] }}</td>
+                    <td>{{ c[3] }}</td>
+                    <td>{{ c[4] }}</td>
+                    <td>{{ c[6] }}</td>
+                    <td>{{ c[7] }}</td>
+                    <td>{{ c[8] }}</td>
+                    <td>{{ c[9] }}</td>
+                    <td>{{ c[13] }}</td>
 
                     <td>
-                        <button onclick="openReminderModal({{ c[0] }})" class="action-button"> {# Added class #}
+                        <button onclick="openReminderModal({{ c[0] }})" class="action-button">
                             Set Reminder
                         </button>
                     </td>
 
                     <td>
                         {% for r in reminders %}
-                            {# r[1] is customer_id in reminders table (should be rowid of customer) #}
                             {% if r[1] == c[0] %}
-                                <div class="onboarded-customer-info"> {# Added class #}
-                                    📅 <b>{{ r[2] }}</b><br> {# reminder_datetime #}
-                                    📝 {{ r[3] }} {# message #}
+                                <div class="onboarded-customer-info">
+                                    📅 <b>{{ r[2] }}</b><br>
+                                    📝 {{ r[3] }}
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -93,26 +92,24 @@
                     <td>
                         {% set count = 1 %}
                         {% for f in followups %}
-                             {# f[1] is customer_id in followups table (should be rowid of customer) #}
                             {% if f[1] == c[0] %}
-                                <div class="onboarded-customer-info"> {# Added class #}
-                                    {{ count }}. {{ f[2] }} <br> {# remark #}
-                                    <span class="timestamp">{{ f[3] }}</span> {# Added class #}
+                                <div class="onboarded-customer-info">
+                                    {{ count }}. {{ f[2] }} <br>
+                                    <span class="timestamp">{{ f[3] }}</span>
                                 </div>
                                 {% set count = count + 1 %}
                             {% endif %}
                         {% endfor %}
                     </td>
 
-                    <td class="onboarded-customer-actions"> {# Added class #}
-                        <form action="/add_followup/{{ c[0] }}" method="POST"> {# Use rowid for the route #}
+                    <td class="onboarded-customer-actions">
+                        <form action="/add_followup/{{ c[0] }}" method="POST">
                             <textarea name="followup_text" maxlength="400" required placeholder="Write follow-up (max 400 chars)"></textarea>
                             <button type="submit">
                                 Submit
                             </button>
                         </form>
                     </td>
-
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -121,21 +118,21 @@
     </div>
 </div>
 
-<div id="reminderModal" class="modal"> {# Using modal class #}
-    <div class="modal-content"> {# Using modal-content class #}
+<div id="reminderModal" class="modal">
+    <div class="modal-content">
         <h2>Set Reminder</h2>
         <form id="reminderForm" method="post">
-            <div> {# Wrap in div for spacing #}
+            <div>
                 <label for="reminder_date">Reminder Date and Time:</label>
                 <input type="datetime-local" id="reminder_date" name="reminder_date" required>
             </div>
 
-            <div> {# Wrap in div for spacing #}
+            <div>
                 <label for="reminder_message">Reminder Message:</label>
                 <textarea id="reminder_message" name="reminder_message" required></textarea>
             </div>
 
-            <div class="button-group"> {# Using button-group class #}
+            <div class="button-group">
                 <button type="submit">
                     Set Reminder
                 </button>
@@ -145,13 +142,12 @@
 </div>
 
 <script>
-let currentCustomerRowId = null; // Use rowid
+let currentCustomerRowId = null;
 
 function openReminderModal(customerRowId) {
     currentCustomerRowId = customerRowId;
     const modal = document.getElementById('reminderModal');
-    modal.style.display = 'flex'; // Use flex to center
-    // Update the form action to use the rowid
+    modal.style.display = 'flex';
     document.getElementById('reminderForm').action = `/set_reminder/${customerRowId}`;
 }
 
@@ -168,24 +164,18 @@ setInterval(function() {
     fetch('/check_reminders')
     .then(response => {
         if (!response.ok) {
-            // Log the error or handle it appropriately
             console.error('Error checking reminders:', response.statusText);
-            return []; // Return empty array to prevent further processing
+            return [];
         }
         return response.json();
     })
     .then(data => {
         data.forEach(reminder => {
-            // Replace alert with a more user-friendly notification (e.g., a modal or toast)
-            console.log(`🔔 Reminder for ${reminder.customer_name}: ${reminder.reminder_message}`);
-            // For demonstration, using alert:
             alert(`🔔 Reminder for ${reminder.customer_name}: ${reminder.reminder_message}`);
-            // Play a notification sound (if you have a sound file)
-            // new Audio('/static/notification.mp3').play();
         });
     })
     .catch(error => console.error('Error fetching reminders:', error));
-}, 30000); // Check every 30 seconds
+}, 30000);
 </script>
 
 </body>

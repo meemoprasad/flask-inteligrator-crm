@@ -528,11 +528,14 @@ def set_reminder(customer_rowid):
     reminder_message = request.form['reminder_message']
 
     try:
-        # Insert reminder using the customer's rowid
+        # Parse and reformat the reminder datetime
+        reminder_datetime_obj = datetime.strptime(reminder_date_time_str, "%Y-%m-%dT%H:%M")
+        formatted_reminder = reminder_datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+
         cursor.execute('''
             INSERT INTO reminders (customer_id, reminder_datetime, message)
             VALUES (?, ?, ?)
-        ''', (customer_rowid, reminder_date_time_str, reminder_message))
+        ''', (customer_rowid, formatted_reminder, reminder_message))
         conn.commit()
         flash('Reminder set successfully!')
     except Exception as e:
@@ -541,6 +544,7 @@ def set_reminder(customer_rowid):
         conn.close()
 
     return redirect(url_for('onboarded_customers'))
+
 
 @app.route('/add_followup/<int:customer_rowid>', methods=['POST'])
 @page_access_required('onboarded_customers')
@@ -574,37 +578,34 @@ def add_followup(customer_rowid):
 @app.route('/check_reminders')
 @login_required
 def check_reminders():
-    """Checks for upcoming reminders for the current user."""
+    """Checks for due reminders for the current user."""
     conn = get_user_db()
     if conn is None:
-        return jsonify([]) # Return empty list if no user DB
+        return jsonify([])
 
-    conn.row_factory = sqlite3.Row # Access columns by name
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    now = datetime.now()
+    window_start = (now - timedelta(seconds=30)).strftime('%Y-%m-%d %H:%M:%S')
+    window_end = now.strftime('%Y-%m-%d %H:%M:%S')
 
-    # Select reminders that are due now or in the past, joining with customers to get the name
     cursor.execute('''
         SELECT r.rowid, c.name, r.message
         FROM reminders r
         JOIN customers c ON r.customer_id = c.rowid
-        WHERE r.reminder_datetime <= ?
-    ''', (now,))
+        WHERE r.reminder_datetime BETWEEN ? AND ?
+    ''', (window_start, window_end))
+
     reminders_due = cursor.fetchall()
-
-    # In a real application, you would delete or mark these reminders as triggered
-    # For this example, we'll just return them
-
-    reminders_list = []
-    for reminder in reminders_due:
-        reminders_list.append({
-            'reminder_id': reminder['rowid'],
-            'customer_name': reminder['name'],
-            'reminder_message': reminder['message']
-        })
-
     conn.close()
-    return jsonify(reminders_list)
+
+    return jsonify([
+        {
+            'reminder_id': r['rowid'],
+            'customer_name': r['name'],
+            'reminder_message': r['message']
+        } for r in reminders_due
+    ])
 
 @app.route('/download_excel')
 @page_access_required('customer_management') # Or whichever page grants download access
