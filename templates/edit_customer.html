@@ -96,6 +96,77 @@
             </div>
         </form>
     </div>
+<div id="notification-area" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+    </div>
 
+<script>
+    // Function to fetch and display reminders
+    function checkForDueReminders() {
+        fetch('/check_reminders') // Call the backend endpoint
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Error checking reminders:', response.status, response.statusText);
+                    return []; // Return empty array on error
+                }
+                return response.json(); // Parse the JSON response
+            })
+            .then(reminders => {
+                const notificationArea = document.getElementById('notification-area');
+
+                reminders.forEach(reminder => {
+                    // Create a notification element for each due reminder
+                    const notificationDiv = document.createElement('div');
+                    notificationDiv.className = 'reminder-notification'; // Use a CSS class
+                    notificationDiv.style.backgroundColor = '#f8d7da'; // Example styling
+                    notificationDiv.style.border = '1px solid #f5c6cb';
+                    notificationDiv.style.color = '#721c24';
+                    notificationDiv.style.padding = '15px';
+                    notificationDiv.style.marginBottom = '10px';
+                    notificationDiv.style.borderRadius = '5px';
+                    notificationDiv.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+                    notificationDiv.style.maxWidth = '300px'; // Limit width
+                    notificationDiv.style.wordBreak = 'break-word'; // Prevent overflow
+                    notificationDiv.style.position = 'relative'; // Needed for close button positioning
+
+                    // Add the message content
+                    notificationDiv.innerHTML = `
+                        <strong>Reminder for ${reminder.customer_name}:</strong><br>
+                        ${reminder.reminder_message}
+                        <span class="close-btn" style="position: absolute; top: 5px; right: 10px; cursor: pointer; font-weight: bold;">&times;</span>
+                    `;
+
+                    // Add event listener to close the notification
+                    notificationDiv.querySelector('.close-btn').addEventListener('click', () => {
+                        notificationArea.removeChild(notificationDiv);
+                        // Optional: Send another request to the server to mark this reminder as 'shown'
+                        // to prevent it from reappearing. This would require an additional backend route
+                        // and a status column in your 'reminders' table.
+                        console.log('Notification closed for reminder ID:', reminder.reminder_id);
+                    });
+
+                    // Append the notification to the notification area
+                    notificationArea.appendChild(notificationDiv);
+
+                    // Optional: Automatically hide the notification after some time (e.g., 15 seconds)
+                    // setTimeout(() => {
+                    //     if (notificationArea.contains(notificationDiv)) {
+                    //         notificationArea.removeChild(notificationDiv);
+                    //     }
+                    // }, 15000); // 15000 milliseconds = 15 seconds
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching reminders:', error);
+                // Optionally display a small error message to the user
+            });
+    }
+
+    // Check for reminders every 60 seconds (60000 milliseconds)
+    setInterval(checkForDueReminders, 60000); // You can adjust the interval
+
+    // Also check immediately when the page loads
+    checkForDueReminders();
+
+</script>
 </body>
 </html>

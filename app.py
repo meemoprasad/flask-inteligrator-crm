@@ -4,9 +4,10 @@ from email.mime.multipart import MIMEMultipart
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import sqlite3
 import os
-from datetime import datetime
-import pandas as pd # Import pandas for Excel export
-from io import BytesIO # Import BytesIO for Excel export
+# Import timedelta here
+from datetime import datetime, timedelta
+import pandas as pd
+from io import BytesIO
 
 app = Flask(__name__)
 # Replace with a strong, unique secret key
@@ -581,31 +582,47 @@ def check_reminders():
     """Checks for due reminders for the current user."""
     conn = get_user_db()
     if conn is None:
+        # Return empty list if user is not logged in or db issue
         return jsonify([])
 
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = sqlite3.Row # Access columns by name
     cursor = conn.cursor()
     now = datetime.now()
+
+    # Define a small time window to check for reminders that are due *around* now.
+    # Checking exactly '==' is unreliable due to timing.
+    # This checks for reminders due from 30 seconds ago up to now.
     window_start = (now - timedelta(seconds=30)).strftime('%Y-%m-%d %H:%M:%S')
     window_end = now.strftime('%Y-%m-%d %H:%M:%S')
 
-    cursor.execute('''
-        SELECT r.rowid, c.name, r.message
-        FROM reminders r
-        JOIN customers c ON r.customer_id = c.rowid
-        WHERE r.reminder_datetime BETWEEN ? AND ?
-    ''', (window_start, window_end))
+    try:
+        cursor.execute('''
+            SELECT r.rowid, c.name AS customer_name, r.message AS reminder_message
+            FROM reminders r
+            JOIN customers c ON r.customer_id = c.rowid
+            WHERE r.reminder_datetime BETWEEN ? AND ?
+            -- Optional: Add a flag in the DB to mark reminders as 'shown'
+            -- and only select those not shown yet. For simplicity, we omit this
+            -- in the first iteration, meaning reminders might pop up multiple times
+            -- if the user stays on the page within the time window.
+        ''', (window_start, window_end))
 
-    reminders_due = cursor.fetchall()
-    conn.close()
+        reminders_due = cursor.fetchall()
+        conn.close()
 
-    return jsonify([
-        {
-            'reminder_id': r['rowid'],
-            'customer_name': r['name'],
-            'reminder_message': r['message']
-        } for r in reminders_due
-    ])
+        # Format the data to be returned as JSON
+        return jsonify([
+            {
+                'reminder_id': r['rowid'],
+                'customer_name': r['customer_name'],
+                'reminder_message': r['reminder_message']
+            } for r in reminders_due
+        ])
+    except Exception as e:
+        print(f"Error checking reminders: {e}")
+        if conn:
+            conn.close()
+        return jsonify([]), 500 # Indicate server error
 
 @app.route('/download_excel')
 @page_access_required('customer_management') # Or whichever page grants download access
