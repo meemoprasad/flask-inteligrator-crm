@@ -224,7 +224,7 @@ table th, table td {
     padding: 10px; /* Increased padding */
     text-align: left;
     /* REMOVED white-space: nowrap; to allow text to wrap */
-    word-break: break-word; /* Added to break long words if necessary */
+    
 }
 
 table th {
