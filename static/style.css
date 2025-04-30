@@ -42,7 +42,7 @@ body {
 .list-container {
     flex-basis: 70%; /* Set initial width to 70% */
     padding: 20px;
-    overflow-x: auto;
+    overflow-x: auto; /* Keep overflow-x to handle cases where content *still* exceeds width */
     box-sizing: border-box;
 }
 
@@ -206,7 +206,7 @@ body {
 }
 
 .table-wrapper {
-    overflow-x: auto;
+    overflow-x: auto; /* Keeps horizontal scrollbar if content is still too wide after wrapping */
     background-color: white; /* Added background */
     padding: 10px; /* Added padding */
     border-radius: 8px; /* Added rounded corners */
@@ -223,7 +223,8 @@ table th, table td {
     border: 1px solid #ddd;
     padding: 10px; /* Increased padding */
     text-align: left;
-    white-space: nowrap; /* Prevent text wrapping in table cells */
+    /* REMOVED white-space: nowrap; to allow text to wrap */
+    word-break: break-word; /* Added to break long words if necessary */
 }
 
 table th {
@@ -372,6 +373,7 @@ table th {
 .view-dashboard-button:hover {
     background-color: #e0a800;
 }
+
 
 /* Styles for Flash Messages */
 .flash-messages {
@@ -576,5 +578,15 @@ table th {
 
      table th, table td {
          padding: 8px; /* Slightly less padding on small screens */
+         /* Allow text wrapping within cells on smaller screens */
+         white-space: normal;
      }
+
+     /* Optional: Add specific styles for the reminder/follow-up columns if they contain lots of text */
+    td:nth-child(11), /* Reminder Info column */
+    td:nth-child(12) /* Follow-up Status column */
+     {
+        white-space: normal; /* Explicitly ensure wrapping here if needed */
+     }
+
 }
